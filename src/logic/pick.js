@@ -1,5 +1,4 @@
-export const pick = obj => {  
-  const entries = Object.entries(obj);
-  const rng = Math.floor(Math.random() * entries.length);
-  return entries[rng];
+export const pick = array => {  
+  const rng = Math.floor(Math.random() * array.length);
+  return array[rng];
 };
