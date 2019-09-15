@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { TimelineMax } from "gsap";
+
 export default {
   name: 'AnswerInput',
   data: function () {
@@ -29,9 +31,6 @@ export default {
       timeline.to(input, 0.03, {
         x: 0
       });
-    },
-    clearAnswer: function () {
-      this.answer = "";
     }
   }
 }

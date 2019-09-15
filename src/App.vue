@@ -1,14 +1,23 @@
 <template>
-  <div id="app">
+  <div
+    id="app" 
+    @keyup.right="handleKeyUpRight"
+    @keydown.shift="() => handleKeyPressShift(true)"
+    @keyup.down="handleKeyUpDown"
+  >
     <div class="main-container">
-      <Quiz ref="quiz" :quiz="currentQuiz.hangul"/>
+      <Quiz ref="quiz" :quiz="currentQuiz.hangul" :answer="currentQuiz.spell" />
       <answer-input ref="input" @keyup-enter="checkAnswer($event)" />
+      <div class="tooltip-container">
+        <h3>SHIFT + → to skip question</h3>
+        <h3>SHIFT + ↓ to show answer</h3>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { TimelineMax } from "gsap";
+
 
 import Quiz from "./components/Quiz";
 import AnswerInput from "./components/AnswerInput";
@@ -30,7 +39,8 @@ export default {
         attampt: 0
       },
       history: [],
-      quizPool: []
+      quizPool: [],
+      shiftDown: false
     }
   },
   methods: {
@@ -48,7 +58,8 @@ export default {
         spell: newHangul[0],
         startTime: (new Date()).getTime()
       };
-      this.$refs.input.clearAnswer();
+      this.$refs.input.answer = "";
+      this.$refs.quiz.answerShown = false;
     },
     checkAnswer: function (answer) {
       const correct = answer === this.currentQuiz.spell || answer === "yes";
@@ -59,7 +70,7 @@ export default {
         });
         this.decreaseRate(this.answer);
         this.$refs.quiz.playCorrectAnime();
-        setTimeout(() => {          
+        setTimeout(() => {
           this.startNewQuiz();
         }, 100);
       }
@@ -84,6 +95,21 @@ export default {
     },
     increaseRate: function () {
       this.quizPool.push([this.currentQuiz.spell, this.currentQuiz.hangul]);
+    },
+    handleKeyPressShift: function (pressed) {
+      this.shiftDown = pressed;
+    },
+    handleKeyUpShift: function () {
+      this.shiftDown = false;      
+    },
+    handleKeyUpRight: function () {
+      if(this.shiftDown){
+        this.increaseRate();
+        this.startNewQuiz();
+      }
+    },
+    handleKeyUpDown: function () {
+      if(this.shiftDown) this.$refs.quiz.answerShown = true;
     }
   },
   mounted: function () {
@@ -95,18 +121,24 @@ export default {
 
 <style>
 body, html{
+  margin: 0;
+  height: 100vh;
   background-color: #042f4b;
 };
-.app{
-  display: flex;
+#app{
 }
 .main-container{
-  display: flex;
+  display: grid;
+  grid-template-rows: 60% 10% 30%;
   flex-direction: column;
   justify-content: center;
   margin: auto;
   width: 800px;
-  height: 500px;
+  height: 100vh;
   text-align: center;
+}
+.tooltip-container{
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+  color: #ccc;
 }
 </style>
