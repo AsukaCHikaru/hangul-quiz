@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div class="main-container">
-      <Quiz :quiz="currentQuiz.hangul"/>
+      <Quiz ref="quiz" :quiz="currentQuiz.hangul"/>
       <answer-input ref="input" @keyup-enter="checkAnswer($event)" />
     </div>
   </div>
@@ -58,7 +58,10 @@ export default {
           ...this.currentQuiz, answerTime: answerTime
         });
         this.decreaseRate(this.answer);
-        this.startNewQuiz();
+        this.$refs.quiz.playCorrectAnime();
+        setTimeout(() => {          
+          this.startNewQuiz();
+        }, 100);
       }
       else {
         this.$refs.input.playWrongAnime();
@@ -98,6 +101,9 @@ body, html{
   display: flex;
 }
 .main-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   margin: auto;
   width: 800px;
   height: 500px;
