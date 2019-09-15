@@ -3,6 +3,7 @@
     id="app" 
     @keyup.right="handleKeyUpRight"
     @keydown.shift="() => handleKeyPressShift(true)"
+    @keyup.shift="() => handleKeyPressShift(false)"
     @keyup.down="handleKeyUpDown"
   >
     <div class="main-container">
@@ -98,9 +99,6 @@ export default {
     },
     handleKeyPressShift: function (pressed) {
       this.shiftDown = pressed;
-    },
-    handleKeyUpShift: function () {
-      this.shiftDown = false;      
     },
     handleKeyUpRight: function () {
       if(this.shiftDown){
