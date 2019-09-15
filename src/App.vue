@@ -1,27 +1,25 @@
 <template>
   <div
-    id="app" 
-    @keyup.right="handleKeyUpRight"
-    @keydown.shift="() => handleKeyPressShift(true)"
-    @keyup.shift="() => handleKeyPressShift(false)"
-    @keyup.down="handleKeyUpDown"
+    id="app"
+    @keyup="handleKeyUp"
   >
     <div class="main-container">
+      <streak ref="streak" :streak="streak" />
       <Quiz ref="quiz" :quiz="currentQuiz.hangul" :answer="currentQuiz.spell" />
       <answer-input ref="input" @keyup-enter="checkAnswer($event)" />
       <div class="tooltip-container">
-        <h3>SHIFT + → to skip question</h3>
-        <h3>SHIFT + ↓ to show answer</h3>
+        <h3>CTRL to skip question</h3>
+        <h3>SHIFT to show answer</h3>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-
-
 import Quiz from "./components/Quiz";
 import AnswerInput from "./components/AnswerInput";
+import Streak from "./components/Streak";
+
 import { hangul } from "./constants/hangulTable";
 import { pick } from "./logic/pick";
 
@@ -29,7 +27,8 @@ export default {
   name: 'app',
   components: {
     Quiz,
-    AnswerInput
+    AnswerInput,
+    Streak
   },
   data: function () {
     return {
@@ -39,9 +38,9 @@ export default {
         startTime: "",
         attampt: 0
       },
+      streak: 0,
       history: [],
-      quizPool: [],
-      shiftDown: false
+      quizPool: []
     }
   },
   methods: {
@@ -71,13 +70,18 @@ export default {
         });
         this.decreaseRate(this.answer);
         this.$refs.quiz.playCorrectAnime();
+        if(!this.$refs.quiz.answerShown) {
+          this.streak++;
+          this.$refs.streak.playComboAnime();}
         setTimeout(() => {
           this.startNewQuiz();
         }, 100);
+
       }
       else {
         this.$refs.input.playWrongAnime();
         this.currentQuiz.attampt++;
+        this.streak = 0;
         this.increaseRate();
       }
     },
@@ -97,17 +101,20 @@ export default {
     increaseRate: function () {
       this.quizPool.push([this.currentQuiz.spell, this.currentQuiz.hangul]);
     },
-    handleKeyPressShift: function (pressed) {
-      this.shiftDown = pressed;
-    },
-    handleKeyUpRight: function () {
-      if(this.shiftDown){
-        this.increaseRate();
-        this.startNewQuiz();
+    handleKeyUp: function (event) {
+      switch (event.key) {
+        case 'Control':
+          this.increaseRate();
+          this.startNewQuiz();
+          this.streak = 0;
+          break;
+        case 'Shift':
+          this.$refs.quiz.answerShown = true;
+          this.streak = 0;
+          break;
+        default:
+          break;
       }
-    },
-    handleKeyUpDown: function () {
-      if(this.shiftDown) this.$refs.quiz.answerShown = true;
     }
   },
   mounted: function () {
@@ -129,7 +136,7 @@ body, html{
 }
 .main-container{
   display: grid;
-  grid-template-rows: 60% 10% 30%;
+  grid-template-rows: 30% 30% 10% 30%;
   flex-direction: column;
   justify-content: center;
   margin: auto;

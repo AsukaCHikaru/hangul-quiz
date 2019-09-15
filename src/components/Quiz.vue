@@ -1,9 +1,11 @@
 <template>
-  <div class="quiz-container">
+  <div class="quiz-container">    
     <div ref="wrapper" class="quiz-wrapper">
       <h1 class="quiz-txt" ref="txt">{{quiz}}</h1>
     </div>
-    <h3 class="quiz-answer" v-if="answerShown">{{answer}}</h3>
+    <div class="quiz-answer-wrapper">
+      <h3 class="quiz-answer" v-if="answerShown">{{answer}}</h3>
+    </div>
   </div>
 </template>
 
@@ -42,25 +44,28 @@ export default {
 <style>
 .quiz-container{
   display: grid;
-  grid-template-rows: 30% 40% 30%;
+  grid-template-rows: 80% 20%;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 .quiz-wrapper{
-  grid-row-start: 2;
-  margin: 3em auto;
+  display: flex;
+  grid-row-start: 1;
+  margin: auto;
   padding: auto;
   border-radius: 50%;
 }
-.quiz-txt{
+h1.quiz-txt{
   margin: auto;
   color: #fff6da;
   font-size: 8em;
   display: inline;
 }
+.quiz-answer-wrapper{
+  grid-row-start: 2;
+}
 .quiz-answer{
-  grid-row-start: 3;
+  margin: 1em auto;
   font-size: 1.5em;
-  /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
   color: #eee;
 }
 </style>
