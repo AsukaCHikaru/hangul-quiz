@@ -49,8 +49,6 @@ export default {
   grid-row-start: 2;
   margin: 3em auto;
   padding: auto;
-  /* height: 12em; */
-  /* width: 12em; */
   border-radius: 50%;
 }
 .quiz-txt{

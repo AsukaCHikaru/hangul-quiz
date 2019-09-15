@@ -126,6 +126,8 @@ body, html{
   background-color: #042f4b;
 };
 #app{
+  height: 100vh;
+  background-color: transparent;
 }
 .main-container{
   display: grid;
