@@ -9,8 +9,9 @@
       <answer-input ref="input" @keyup-enter="checkAnswer($event)" />
       <div class="tooltip-container">
         <h3>CTRL to skip question</h3>
-        <h3>SHIFT to show answer</h3>
+        <h3>ALT (OPTION) to show answer</h3>
       </div>
+      <history :history="history" />
     </div>
   </div>
 </template>
@@ -19,6 +20,7 @@
 import Quiz from "./components/Quiz";
 import AnswerInput from "./components/AnswerInput";
 import Streak from "./components/Streak";
+import History from "./components/History";
 
 import { hangul } from "./constants/hangulTable";
 import { pick } from "./logic/pick";
@@ -28,7 +30,8 @@ export default {
   components: {
     Quiz,
     AnswerInput,
-    Streak
+    Streak,
+    History
   },
   data: function () {
     return {
@@ -56,12 +59,15 @@ export default {
       this.currentQuiz = {
         hangul: newHangul[1],
         spell: newHangul[0],
-        startTime: (new Date()).getTime()
+        startTime: (new Date()).getTime(),
+        attampt: 0
       };
       this.$refs.input.answer = "";
       this.$refs.quiz.answerShown = false;
     },
     checkAnswer: function (answer) {
+      this.currentQuiz.attampt++;
+    
       const correct = answer === this.currentQuiz.spell || answer === "yes";
       if(correct) {
         const answerTime = (((new Date()).getTime() - this.currentQuiz.startTime) / 1000).toFixed(2);
@@ -80,7 +86,6 @@ export default {
       }
       else {
         this.$refs.input.playWrongAnime();
-        this.currentQuiz.attampt++;
         this.streak = 0;
         this.increaseRate();
       }
@@ -108,7 +113,7 @@ export default {
           this.startNewQuiz();
           this.streak = 0;
           break;
-        case 'Shift':
+        case 'Alt':
           this.$refs.quiz.answerShown = true;
           this.streak = 0;
           break;
@@ -137,6 +142,7 @@ body, html{
 .main-container{
   display: grid;
   grid-template-rows: 30% 30% 10% 30%;
+  grid-template-columns: 25% 50% 25%;
   flex-direction: column;
   justify-content: center;
   margin: auto;
@@ -145,6 +151,8 @@ body, html{
   text-align: center;
 }
 .tooltip-container{
+  grid-row-start: 4;
+  grid-column-start: 2;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
   color: #ccc;
 }

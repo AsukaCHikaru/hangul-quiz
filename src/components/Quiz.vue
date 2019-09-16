@@ -43,6 +43,8 @@ export default {
 
 <style>
 .quiz-container{
+  grid-row-start: 2;
+  grid-column: 2;
   display: grid;
   grid-template-rows: 80% 20%;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
@@ -64,7 +66,7 @@ h1.quiz-txt{
   grid-row-start: 2;
 }
 .quiz-answer{
-  margin: 1em auto;
+  margin: 0 auto;
   font-size: 1.5em;
   color: #eee;
 }

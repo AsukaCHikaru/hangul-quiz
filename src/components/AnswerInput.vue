@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="input-container">
     <input ref="input" class="answer-input" type="text" v-model="answer" @keyup.enter="handleKeyUpEnter">
   </div>
 </template>
@@ -37,6 +37,10 @@ export default {
 </script>
 
 <style>
+.input-container{
+  grid-row-start: 3;
+  grid-column-start: 2;
+}
 .answer-input{
   background-color: transparent;
   border: solid 0px #fbc99d;

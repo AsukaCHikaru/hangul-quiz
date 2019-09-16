@@ -34,6 +34,8 @@ export default {
 
 <style>
 .streak-container{
+  grid-row-start: 1;
+  grid-column: 2;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
