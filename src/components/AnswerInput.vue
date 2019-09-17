@@ -1,6 +1,13 @@
 <template>
   <div class="input-container">
-    <input ref="input" class="answer-input" type="text" v-model="answer" @keyup.enter="handleKeyUpEnter">
+    <input 
+      ref="input" 
+      class="answer-input" 
+      type="text" 
+      v-model="answer" 
+      @keyup.enter="handleKeyUpEnter"
+      placeholder="Insert romanisation"
+    >
   </div>
 </template>
 
@@ -47,6 +54,10 @@ export default {
   border-width: 0 0 3px 0;
   color: #fbc99d;
   font-size: 1.5em;
+}
+.answer-input::placeholder, .answer-input::-webkit-input-placeholder{
+  color: #ffffff55;
+  font-weight: 300;
 }
 .answer-input:focus{
   outline: none;

@@ -428,7 +428,7 @@ export const hangul = {
     jjoe: "쬐",
     jjui: "쯰",
     jjwo: "쭤",
-    jjwe: "쫴",
+    jjwe: "쮀",
     jjwi: "쮜"
   }
 };
