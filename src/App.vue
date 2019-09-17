@@ -8,8 +8,8 @@
       <Quiz ref="quiz" :quiz="currentQuiz.hangul" :answer="currentQuiz.spell" />
       <answer-input ref="input" @keyup-enter="checkAnswer($event)" />
       <div class="tooltip-container">
-        <h3>CTRL to skip question</h3>
-        <h3>ALT (OPTION) to show answer</h3>
+        <!-- <h3>CTRL to skip question</h3> -->
+        <h3>CTRL to show answer</h3>
       </div>
       <history :history="history" />
     </div>
@@ -107,13 +107,8 @@ export default {
       this.quizPool.push([this.currentQuiz.spell, this.currentQuiz.hangul]);
     },
     handleKeyUp: function (event) {
-      switch (event.key) {
+      switch (event.key) {        
         case 'Control':
-          this.increaseRate();
-          this.startNewQuiz();
-          this.streak = 0;
-          break;
-        case 'Alt':
           this.$refs.quiz.answerShown = true;
           this.streak = 0;
           break;

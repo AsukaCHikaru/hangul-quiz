@@ -1,8 +1,12 @@
 <template>
   <div class="history-container">
+    <div class="history-tab-container">
+    <div class="history-tab" :class="[filter==='all' ? 'show' : '']" @click="handleClickFilter('all')">ALL</div>
+    <div class="history-tab" :class="[filter==='wrong' ? 'show' : '']" @click="handleClickFilter('wrong')">WRONG</div>
+    </div>
     <ul class="history-ul">
       <li
-        v-for="item in history"
+        v-for="item in liItems"
         :key="item.startTime"
         class="history-li"
       >
@@ -23,11 +27,22 @@ export default {
   props: {
     history: Array
   },
+  data: function () {
+    return {
+      filter: 'wrong'
+    }
+  },
   computed: {
     liItems: function () {
-      return this.history.map(item => {
-        return `${item.hangul} ${item.spell} ${item.answerTime}s ${item.attampt} try`
-      })
+      if(this.filter === 'all'){
+        return this.history;
+      }
+      return this.history.filter(item => item.attampt > 1);
+    }
+  },
+  methods: {
+    handleClickFilter: function (filter) {
+      this.filter = filter;      
     }
   }
 }
@@ -37,14 +52,29 @@ export default {
 .history-container{
   grid-row-start: 2;
   grid-column-start: 3;
+  grid-row-end: 4;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+  background-color: #ffffff22;
+  overflow: scroll;
+}
+.history-tab-container{
+  width: 100%;
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+.history-tab{
+  display: inline-block;
+  color: #ccc;
+  font-weight: 700;
+  cursor: pointer;
+}
+.history-tab.show{
+  background-color: #ffffff55;
 }
 .history-ul{
-  list-style: decimal;
+  list-style: none;
   padding: 0;
   color: #ccc;
-  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
-}
-.history-li{
 }
 .history-li-context-container{
   display: grid;
