@@ -323,7 +323,7 @@ export const hangul = {
     chae: "채",
     che: "체",
     chyae: "챼",
-    chye: "체",
+    chye: "쳬",
     chwa: "촤",
     chwae: "쵀",
     choe: "최",
