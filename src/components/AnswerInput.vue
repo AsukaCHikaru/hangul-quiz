@@ -6,7 +6,8 @@
       type="text" 
       v-model="answer" 
       @keyup.enter="handleKeyUpEnter"
-      placeholder="Insert romanisation"
+      :placeholder="placeholderStr"
+      @click="handleClickInput"
     >
   </div>
 </template>
@@ -16,9 +17,17 @@ import { TimelineMax } from "gsap";
 
 export default {
   name: 'AnswerInput',
+  props: {
+    mode: String
+  },
   data: function () {
     return {
-      answer: ""
+      answer: "",      
+    }
+  },
+  computed: {
+    placeholderStr: function () {
+      return this.mode === "countdown" ? "Click to start" : "Insert romanisation";
     }
   },
   methods: {
@@ -38,6 +47,9 @@ export default {
       timeline.to(input, 0.03, {
         x: 0
       });
+    },
+    handleClickInput: function () {
+      this.$emit('click-input-event');
     }
   }
 }
@@ -45,7 +57,7 @@ export default {
 
 <style>
 .input-container{
-  grid-row-start: 3;
+  grid-row-start: 4;
   grid-column-start: 2;
 }
 .answer-input{

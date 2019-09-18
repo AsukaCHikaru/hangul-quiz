@@ -43,7 +43,7 @@ export default {
 
 <style>
 .quiz-container{
-  grid-row-start: 2;
+  grid-row-start: 3;
   grid-column: 2;
   display: grid;
   grid-template-rows: 80% 20%;

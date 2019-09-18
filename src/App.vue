@@ -4,11 +4,24 @@
     @keyup="handleKeyUp"
   >
     <div class="main-container">
-      <streak ref="streak" :streak="streak" />
+      <count-down
+        ref="countdown"
+        v-if="mode === 'countdown'"
+        @timeup="handleTimeup"
+      />
+      <streak ref="streak" :streak="streak" :result="result" />
+      <div class="option-container">
+        <button class="option-btn" @click="handleClickModeBtn('free')">FREE MODE</button>
+        <button class="option-btn" @click="handleClickModeBtn('countdown')">COUNT DOWN MODE</button>
+      </div>
       <Quiz ref="quiz" :quiz="currentQuiz.hangul" :answer="currentQuiz.spell" />
-      <answer-input ref="input" @keyup-enter="checkAnswer($event)" />
+      <answer-input
+        ref="input"
+        @keyup-enter="checkAnswer($event)"
+        :mode="mode"
+        @click-input-event="handleClickInput"
+      />
       <div class="tooltip-container">
-        <!-- <h3>CTRL to skip question</h3> -->
         <h3>CTRL to show answer</h3>
       </div>
       <history :history="history" />
@@ -21,6 +34,7 @@ import Quiz from "./components/Quiz";
 import AnswerInput from "./components/AnswerInput";
 import Streak from "./components/Streak";
 import History from "./components/History";
+import CountDown from "./components/CountDown";
 
 import { hangul } from "./constants/hangulTable";
 import { pick } from "./logic/pick";
@@ -31,7 +45,8 @@ export default {
     Quiz,
     AnswerInput,
     Streak,
-    History
+    History,
+    CountDown
   },
   data: function () {
     return {
@@ -43,7 +58,9 @@ export default {
       },
       streak: 0,
       history: [],
-      quizPool: []
+      quizPool: [],
+      mode: 'free',
+      result: {}
     }
   },
   methods: {
@@ -67,11 +84,11 @@ export default {
     },
     checkAnswer: function (answer) {
       this.currentQuiz.attampt++;
-    
+
       const correct = answer === this.currentQuiz.spell || answer === "yes";
       if(correct) {
         const answerTime = (((new Date()).getTime() - this.currentQuiz.startTime) / 1000).toFixed(2);
-        this.history.push({
+        this.history.unshift({
           ...this.currentQuiz, answerTime: answerTime
         });
         this.decreaseRate(this.answer);
@@ -107,7 +124,7 @@ export default {
       this.quizPool.push([this.currentQuiz.spell, this.currentQuiz.hangul]);
     },
     handleKeyUp: function (event) {
-      switch (event.key) {        
+      switch (event.key) {
         case 'Control':
           this.$refs.quiz.answerShown = true;
           this.streak = 0;
@@ -115,6 +132,28 @@ export default {
         default:
           break;
       }
+    },
+    handleClickModeBtn: function (mode) {
+      this.mode = mode;
+    },
+    handleClickInput: function () {
+      if(this.mode==='countdown') {
+        this.startNewQuiz();
+        this.$refs.countdown.startCountDown();
+        this.history = [];
+        this.result = {};
+      }
+    },
+    handleTimeup: function () {
+      let index = 1;
+      const result = { numOfQ: this.history.length, correct: 0, timeUsed: 0 };
+      this.history.forEach(q => {
+        if(q.attampt === 1) result.correct++;
+        result.timeUsed += parseInt(q.answerTime);
+      });
+      result.correctPer = (result.correct*100/this.history.length).toFixed(2);
+      // result.avgTimePerQ = (60 / this.history.length).toFixed(2);
+      this.result = { ...result };      
     }
   },
   mounted: function () {
@@ -126,27 +165,47 @@ export default {
 
 <style>
 body, html{
-  margin: 0;
-  height: 100vh;
   background-color: #042f4b;
 };
 #app{
-  height: 100vh;
+  height: 100%;
   background-color: transparent;
 }
 .main-container{
   display: grid;
-  grid-template-rows: 30% 30% 10% 30%;
-  grid-template-columns: 25% 50% 25%;
+  grid-template-rows: 10% 20% 30% 10% 30%;
+  grid-template-columns: 20% 60% 20%;
   flex-direction: column;
   justify-content: center;
   margin: auto;
-  width: 800px;
-  height: 100vh;
+  width: 1200px;
+  height: 95vh;
   text-align: center;
 }
+.option-container{
+  grid-area: 2/ 1/ 2/ 2;
+}
+.option-btn{
+  display: block;
+  margin: 10px 0;
+  width: 100%;
+  font-size: 1.2em;
+  background-color: #ffffff22;
+  color: #ccc;
+  cursor: pointer;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+  border-color: #444 #333 #000 #333;
+  box-shadow: 0px 2px 2px 2px #111;
+}
+.option-btn:focus{
+  outline: none;
+}
+.option-btn:active{
+  background-color: #032033;
+  color: #555;
+}
 .tooltip-container{
-  grid-row-start: 4;
+  grid-row-start: 5;
   grid-column-start: 2;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
   color: #ccc;

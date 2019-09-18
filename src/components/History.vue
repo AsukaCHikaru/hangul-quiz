@@ -50,12 +50,12 @@ export default {
 
 <style>
 .history-container{
-  grid-row-start: 2;
-  grid-column-start: 3;
-  grid-row-end: 4;
+  grid-row-start: 3;
+  grid-row-end: 5;
+  grid-column-start: 1;
   font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
-  background-color: #ffffff22;
   overflow: scroll;
+  background-color: #ffffff22;
 }
 .history-tab-container{
   width: 100%;
@@ -67,9 +67,10 @@ export default {
   color: #ccc;
   font-weight: 700;
   cursor: pointer;
+  background-color: #042f4b;
 }
 .history-tab.show{
-  background-color: #ffffff55;
+  background-color: transparent;
 }
 .history-ul{
   list-style: none;

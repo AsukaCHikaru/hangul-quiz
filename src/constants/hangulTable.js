@@ -311,7 +311,7 @@ export const hangul = {
     wi: "위",
     jae: "재",
     je: "제",
-    jyae: "재",
+    jyae: "쟤",
     jye: "졔",
     jwa: "좌",
     jwae: "좨",
