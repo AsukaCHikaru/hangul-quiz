@@ -1,51 +1,51 @@
 <template>
   <div class="countdown-container">
-    <h1 class="countdown-txt">{{time}}</h1>
+    <h1 class="countdown-txt">{{ time }}</h1>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref } from "vue";
 
 export default {
-  name: 'CountDown',
-  emits: ['timeup'],
+  name: "CountDown",
+  emits: ["timeup"],
   setup(props, { emit }) {
-    const time = ref(60)
-    let cdTimer = null
+    const time = ref(60);
+    let cdTimer = null;
 
     const startCountDown = () => {
-      time.value = 60
+      time.value = 60;
       if (cdTimer) {
-        clearInterval(cdTimer)
+        clearInterval(cdTimer);
       }
       cdTimer = setInterval(() => {
         if (time.value > 0) {
-          time.value--
+          time.value--;
         } else {
-          clearInterval(cdTimer)
-          emit('timeup')
+          clearInterval(cdTimer);
+          emit("timeup");
         }
-      }, 1000)
-    }
+      }, 1000);
+    };
 
     return {
       time,
-      startCountDown
-    }
-  }
-}
+      startCountDown,
+    };
+  },
+};
 </script>
 
 <style>
-.countdown-container{
+.countdown-container {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   grid-row-start: 1;
   grid-column: 1/ 4;
 }
-.countdown-txt{
+.countdown-txt {
   margin: 0 auto;
   color: #ddd;
   font-family: Helvetica, sans-serif;

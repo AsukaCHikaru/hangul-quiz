@@ -38,7 +38,7 @@ export const hangul = {
     tt: "ㄸ",
     pp: "ㅃ",
     ss: "ㅆ",
-    jj: "ㅉ"
+    jj: "ㅉ",
   },
   double: {
     ga: "가",
@@ -429,6 +429,6 @@ export const hangul = {
     jjui: "쯰",
     jjwo: "쭤",
     jjwe: "쮀",
-    jjwi: "쮜"
-  }
+    jjwi: "쮜",
+  },
 };
