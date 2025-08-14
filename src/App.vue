@@ -30,17 +30,18 @@
 </template>
 
 <script>
-import Quiz from "./components/Quiz";
-import AnswerInput from "./components/AnswerInput";
-import Streak from "./components/Streak";
-import History from "./components/History";
-import CountDown from "./components/CountDown";
+import { ref, reactive, onMounted } from 'vue'
+import Quiz from "./components/Quiz.vue"
+import AnswerInput from "./components/AnswerInput.vue"
+import Streak from "./components/Streak.vue"
+import History from "./components/History.vue"
+import CountDown from "./components/CountDown.vue"
 
-import { hangul } from "./constants/hangulTable";
-import { pick } from "./logic/pick";
+import { hangul } from "./constants/hangulTable.js"
+import { pick } from "./logic/pick.js"
 
 export default {
-  name: 'app',
+  name: 'App',
   components: {
     Quiz,
     AnswerInput,
@@ -48,117 +49,166 @@ export default {
     History,
     CountDown
   },
-  data: function () {
-    return {
-      currentQuiz: {
-        hangul: "",
-        spell: "",
-        startTime: "",
-        attampt: 0
-      },
-      streak: 0,
-      history: [],
-      quizPool: [],
-      mode: 'free',
-      result: {}
+  setup() {
+    // Refs for template refs
+    const quiz = ref(null)
+    const input = ref(null)
+    const streak = ref(null)
+    const countdown = ref(null)
+
+    // Reactive state
+    const currentQuiz = reactive({
+      hangul: "",
+      spell: "",
+      startTime: "",
+      attampt: 0
+    })
+
+    const streakCount = ref(0)
+    const history = ref([])
+    const quizPool = ref([])
+    const mode = ref('free')
+    const result = ref({})
+
+    // Methods
+    const pickNewHangul = () => {
+      return pick(hangul.double)
     }
-  },
-  methods: {
-    pickNewHangul: function () {
-      return pick(hangul.double);
-    },
-    startNewQuiz: function () {
+
+    const startNewQuiz = () => {
       const newHangul = pick(
-        Object.
-          entries(hangul.double).
-          filter(item => item[0] !== this.currentQuiz.spell)
-      );
-      this.currentQuiz = {
+        Object.entries(hangul.double).filter(item => item[0] !== currentQuiz.spell)
+      )
+      
+      Object.assign(currentQuiz, {
         hangul: newHangul[1],
         spell: newHangul[0],
         startTime: (new Date()).getTime(),
         attampt: 0
-      };
-      this.$refs.input.answer = "";
-      this.$refs.quiz.answerShown = false;
-    },
-    checkAnswer: function (answer) {
-      this.currentQuiz.attampt++;
+      })
+      
+      if (input.value) {
+        input.value.answer = ""
+      }
+      if (quiz.value) {
+        quiz.value.answerShown = false
+      }
+    }
 
-      const correct = answer === this.currentQuiz.spell || answer === "yes";
-      if(correct) {
-        const answerTime = (((new Date()).getTime() - this.currentQuiz.startTime) / 1000).toFixed(2);
-        this.history.unshift({
-          ...this.currentQuiz, answerTime: answerTime
-        });
-        this.decreaseRate(this.answer);
-        this.$refs.quiz.playCorrectAnime();
-        if(!this.$refs.quiz.answerShown) {
-          this.streak++;
-          this.$refs.streak.playComboAnime();}
+    const checkAnswer = (answer) => {
+      currentQuiz.attampt++
+
+      const correct = answer === currentQuiz.spell || answer === "yes"
+      if (correct) {
+        const answerTime = (((new Date()).getTime() - currentQuiz.startTime) / 1000).toFixed(2)
+        history.value.unshift({
+          ...currentQuiz, 
+          answerTime: answerTime
+        })
+        decreaseRate()
+        if (quiz.value) {
+          quiz.value.playCorrectAnime()
+        }
+        if (quiz.value && !quiz.value.answerShown) {
+          streakCount.value++
+          if (streak.value) {
+            streak.value.playComboAnime()
+          }
+        }
         setTimeout(() => {
-          this.startNewQuiz();
-        }, 100);
+          startNewQuiz()
+        }, 100)
+      } else {
+        if (input.value) {
+          input.value.playWrongAnime()
+        }
+        streakCount.value = 0
+        increaseRate()
+      }
+    }
 
+    const setQuizPool = () => {
+      const defRatio = 5
+      for (let time = 0; time < defRatio; time++) {
+        quizPool.value = quizPool.value.concat([...Object.entries(hangul.double)])
       }
-      else {
-        this.$refs.input.playWrongAnime();
-        this.streak = 0;
-        this.increaseRate();
+    }
+
+    const decreaseRate = () => {
+      const itemsInPool = quizPool.value.filter(item => item[0] === currentQuiz.spell).length
+      if (itemsInPool > 1) {
+        const indexOfItemToDel = quizPool.value.findIndex(item => item[0] === currentQuiz.spell)
+        quizPool.value.splice(indexOfItemToDel, 1)
       }
-    },
-    setQuizPool: function () {
-      const defRatio = 5;
-      for(let time = 0; time < defRatio; time++){
-        this.quizPool = this.quizPool.concat([...Object.entries(hangul.double)]);
-      }
-    },
-    decreaseRate: function () {
-      const itemsInPool = this.quizPool.filter(item => item[0] === this.currentQuiz.spell).length;
-      if(itemsInPool > 1){
-        const indexOfItemToDel = this.quizPool.findIndex(item => item[0] === this.currentQuiz.spell);
-        this.quizPool.splice(indexOfItemToDel, 1);
-      }
-    },
-    increaseRate: function () {
-      this.quizPool.push([this.currentQuiz.spell, this.currentQuiz.hangul]);
-    },
-    handleKeyUp: function (event) {
+    }
+
+    const increaseRate = () => {
+      quizPool.value.push([currentQuiz.spell, currentQuiz.hangul])
+    }
+
+    const handleKeyUp = (event) => {
       switch (event.key) {
         case 'Control':
-          this.$refs.quiz.answerShown = true;
-          this.streak = 0;
-          break;
+          if (quiz.value) {
+            quiz.value.answerShown = true
+          }
+          streakCount.value = 0
+          break
         default:
-          break;
+          break
       }
-    },
-    handleClickModeBtn: function (mode) {
-      this.mode = mode;
-    },
-    handleClickInput: function () {
-      if(this.mode==='countdown') {
-        this.startNewQuiz();
-        this.$refs.countdown.startCountDown();
-        this.history = [];
-        this.result = {};
-      }
-    },
-    handleTimeup: function () {
-      let index = 1;
-      const result = { numOfQ: this.history.length, correct: 0, timeUsed: 0 };
-      this.history.forEach(q => {
-        if(q.attampt === 1) result.correct++;
-        result.timeUsed += parseInt(q.answerTime);
-      });
-      result.correctPer = (result.correct*100/this.history.length).toFixed(2);
-      // result.avgTimePerQ = (60 / this.history.length).toFixed(2);
-      this.result = { ...result };      
     }
-  },
-  mounted: function () {
-    this.setQuizPool();
-    this.startNewQuiz();
+
+    const handleClickModeBtn = (selectedMode) => {
+      mode.value = selectedMode
+    }
+
+    const handleClickInput = () => {
+      if (mode.value === 'countdown') {
+        startNewQuiz()
+        if (countdown.value) {
+          countdown.value.startCountDown()
+        }
+        history.value = []
+        result.value = {}
+      }
+    }
+
+    const handleTimeup = () => {
+      const newResult = { numOfQ: history.value.length, correct: 0, timeUsed: 0 }
+      history.value.forEach(q => {
+        if (q.attampt === 1) newResult.correct++
+        newResult.timeUsed += parseInt(q.answerTime)
+      })
+      newResult.correctPer = (newResult.correct * 100 / history.value.length).toFixed(2)
+      result.value = { ...newResult }
+    }
+
+    // Lifecycle
+    onMounted(() => {
+      setQuizPool()
+      startNewQuiz()
+    })
+
+    return {
+      // Template refs
+      quiz,
+      input,
+      streak,
+      countdown,
+      // State
+      currentQuiz,
+      streak: streakCount,
+      history,
+      mode,
+      result,
+      // Methods
+      checkAnswer,
+      handleKeyUp,
+      handleClickModeBtn,
+      handleClickInput,
+      handleTimeup
+    }
   }
 }
 </script>

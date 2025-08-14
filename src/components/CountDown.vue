@@ -5,23 +5,33 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+
 export default {
   name: 'CountDown',
-  data: function () {
-    return {
-      time: 60
-    }
-  },
-  methods: {
-    startCountDown: function () {
-      this.time = 60;
-      const cdTimer = setInterval(() => {
-        if(this.time > 0) this.time--;
-        else {
-          clearInterval(cdTimer);
-          this.$emit('timeup');
+  emits: ['timeup'],
+  setup(props, { emit }) {
+    const time = ref(60)
+    let cdTimer = null
+
+    const startCountDown = () => {
+      time.value = 60
+      if (cdTimer) {
+        clearInterval(cdTimer)
+      }
+      cdTimer = setInterval(() => {
+        if (time.value > 0) {
+          time.value--
+        } else {
+          clearInterval(cdTimer)
+          emit('timeup')
         }
-      }, 1000);
+      }, 1000)
+    }
+
+    return {
+      time,
+      startCountDown
     }
   }
 }

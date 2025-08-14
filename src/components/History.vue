@@ -22,27 +22,31 @@
 </template>
 
 <script>
+import { ref, computed } from 'vue'
+
 export default {
   name: 'History',
   props: {
     history: Array
   },
-  data: function () {
-    return {
-      filter: 'wrong'
-    }
-  },
-  computed: {
-    liItems: function () {
-      if(this.filter === 'all'){
-        return this.history;
+  setup(props) {
+    const filter = ref('wrong')
+
+    const liItems = computed(() => {
+      if (filter.value === 'all') {
+        return props.history
       }
-      return this.history.filter(item => item.attampt > 1);
+      return props.history.filter(item => item.attampt > 1)
+    })
+
+    const handleClickFilter = (selectedFilter) => {
+      filter.value = selectedFilter
     }
-  },
-  methods: {
-    handleClickFilter: function (filter) {
-      this.filter = filter;      
+
+    return {
+      filter,
+      liItems,
+      handleClickFilter
     }
   }
 }

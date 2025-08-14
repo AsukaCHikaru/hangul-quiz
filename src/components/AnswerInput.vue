@@ -13,43 +13,47 @@
 </template>
 
 <script>
-import { TimelineMax } from "gsap";
+import { ref, computed } from 'vue'
+import { gsap } from 'gsap'
 
 export default {
   name: 'AnswerInput',
   props: {
     mode: String
   },
-  data: function () {
-    return {
-      answer: "",      
-    }
-  },
-  computed: {
-    placeholderStr: function () {
-      return this.mode === "countdown" ? "Click to start" : "Insert romanisation";
-    }
-  },
-  methods: {
-    handleKeyUpEnter: function () {
-      this.$emit('keyup-enter', this.answer);
-    },
-    playWrongAnime: function () {
-      const { input } = this.$refs;
-      const timeline = new TimelineMax({repeat: 1});
+  emits: ['keyup-enter', 'click-input-event'],
+  setup(props, { emit }) {
+    const answer = ref("")
+    const input = ref(null)
 
-      timeline.to(input, 0.03, {
-        x: 10
-      });
-      timeline.to(input, 0.03, {
-        x: -10
-      });
-      timeline.to(input, 0.03, {
-        x: 0
-      });
-    },
-    handleClickInput: function () {
-      this.$emit('click-input-event');
+    const placeholderStr = computed(() => {
+      return props.mode === "countdown" ? "Click to start" : "Insert romanisation"
+    })
+
+    const handleKeyUpEnter = () => {
+      emit('keyup-enter', answer.value)
+    }
+
+    const playWrongAnime = () => {
+      if (input.value) {
+        const timeline = gsap.timeline({ repeat: 1 })
+        timeline.to(input.value, { duration: 0.03, x: 10 })
+        timeline.to(input.value, { duration: 0.03, x: -10 })
+        timeline.to(input.value, { duration: 0.03, x: 0 })
+      }
+    }
+
+    const handleClickInput = () => {
+      emit('click-input-event')
+    }
+
+    return {
+      answer,
+      input,
+      placeholderStr,
+      handleKeyUpEnter,
+      playWrongAnime,
+      handleClickInput
     }
   }
 }

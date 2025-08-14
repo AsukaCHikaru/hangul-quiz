@@ -10,7 +10,8 @@
 </template>
 
 <script>
-import { TimelineMax } from "gsap";
+import { ref } from 'vue'
+import { gsap } from 'gsap'
 
 export default {
   name: 'Quiz',
@@ -18,24 +19,31 @@ export default {
     quiz: String,
     answer: String
   },
-  data: function () {
-    return {
-      answerShown: false
+  setup() {
+    const answerShown = ref(false)
+    const wrapper = ref(null)
+
+    const playCorrectAnime = () => {
+      if (wrapper.value) {
+        const timeline = gsap.timeline()
+        timeline.to(wrapper.value, {
+          duration: 0.1,
+          scale: 1.2,
+          ease: "back.out(1.5)",
+          opacity: 0.3
+        })
+        timeline.to(wrapper.value, {
+          duration: 0.05,
+          scale: 1,
+          opacity: 1
+        })
+      }
     }
-  },
-  methods: {
-    playCorrectAnime: function () {
-      const { wrapper } = this.$refs;
-      const timeline = new TimelineMax();
-      timeline.to(wrapper, 0.1, {
-        scale: 1.2,
-        ease: Back.easeOut.config(1.5),
-        opacity: 0.3
-      });
-      timeline.to(wrapper, 0.05, {
-        scale: 1,
-        opacity: 1
-      });
+
+    return {
+      answerShown,
+      wrapper,
+      playCorrectAnime
     }
   }
 }

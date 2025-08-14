@@ -8,7 +8,8 @@
 </template>
 
 <script>
-import { TimelineMax } from "gsap";
+import { ref, computed } from 'vue'
+import { gsap } from 'gsap'
 
 export default {
   name: 'Streak',
@@ -16,26 +17,35 @@ export default {
     streak: Number,
     result: Object
   },
-  computed: {
-    resultStr: function () {      
-      return this.result.hasOwnProperty('correct') 
-      ? `${this.result.correct}/${this.result.numOfQ} (${this.result.correctPer}%), ${(this.result.timeUsed/this.result.numOfQ).toFixed(2)}s per question` 
-      : null
-    }
-  },
-  methods: {
-    playComboAnime: function () {
-      const { wrapper } = this.$refs;
-      const timeline = new TimelineMax();
+  setup(props) {
+    const wrapper = ref(null)
 
-      timeline.to(wrapper, 0.01, {
-        scale: 2,
-        opacity: 0.1
-      });
-      timeline.to(wrapper, 0.2, {
-        scale: 1,
-        opacity: 1
-      });
+    const resultStr = computed(() => {
+      return props.result && props.result.hasOwnProperty('correct')
+        ? `${props.result.correct}/${props.result.numOfQ} (${props.result.correctPer}%), ${(props.result.timeUsed/props.result.numOfQ).toFixed(2)}s per question`
+        : null
+    })
+
+    const playComboAnime = () => {
+      if (wrapper.value) {
+        const timeline = gsap.timeline()
+        timeline.to(wrapper.value, {
+          duration: 0.01,
+          scale: 2,
+          opacity: 0.1
+        })
+        timeline.to(wrapper.value, {
+          duration: 0.2,
+          scale: 1,
+          opacity: 1
+        })
+      }
+    }
+
+    return {
+      wrapper,
+      resultStr,
+      playComboAnime
     }
   }
 }
